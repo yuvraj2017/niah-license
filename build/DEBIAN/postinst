@@ -1,0 +1,105 @@
+#!/bin/bash
+# file name preinst
+# Pre-install script for tera. This removes old versions o tera.
+
+echo "Installing niah ..."
+
+sudo chown niah:niah /home/niah -R
+sudo cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf.org
+sudo cp /usr/share/niah-license/nginx.conf /etc/nginx/nginx.conf
+
+sudo cp /usr/share/niah-license/niah-license /etc/nginx/sites-available/niah-license
+sudo ln -s /etc/nginx/sites-available/niah-license /etc/nginx/sites-enabled/niah-license
+sudo service nginx restart
+
+sudo cp /etc/postgresql/10/main/pg_hba.conf /etc/postgresql/10/main/pg_hba.conf.org
+sudo cp /usr/share/niah-license/pg_hba.conf /etc/postgresql/10/main/pg_hba.conf
+sudo service postgresql restart
+
+sudo -u postgres psql -c "CREATE DATABASE niahdb;"
+sudo -u postgres psql -c "CREATE USER versa WITH ENCRYPTED PASSWORD 'versa123';"
+sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE niahdb TO versa;"
+
+# Virtual ENV
+cd /home/niah
+sudo pip3 install virtualenv
+python3 -m venv niah-license
+
+# Connect VENV and Install requirements.txt
+sudo apt-get purge python3-yaml
+
+source niah-license/bin/activate
+python3 -m pip install --upgrade pip
+pip3 install -r /usr/share/niah-license/requirements.txt
+deactivate
+
+
+# Dump DB Schema
+set PGPASSWORD=versa123&&psql niahdb versa < /usr/share/niah-license/s.dump
+
+# Pricing Table
+export PGPASSWORD='versa123'&&psql niahdb versa -c "INSERT INTO pricing_tab(id, type, number, amount) values('1', 'users', '1', '10');"
+export PGPASSWORD='versa123'&&psql niahdb versa -c "INSERT INTO pricing_tab(id, type, number, amount) values('2', 'scans', '1', '1');"
+export PGPASSWORD='versa123'&&psql niahdb versa -c "INSERT INTO pricing_tab(id, type, number, amount) values('3', 'subscription', '1', '200');"
+export PGPASSWORD='versa123'&&psql niahdb versa -c "INSERT INTO pricing_tab(id, type, number, amount) values('4', 'subscription', '2', '2000');"
+
+# Subscription Table
+export PGPASSWORD='versa123'&&psql niahdb versa -c "INSERT INTO subscription_db(id, subscription_name, scans, users, modules, description) values('1', 'NiahLite', '300', '10', '{\"open source security\":\"yes\",\"container security\":\"yes\",\"license compliance\":\"yes\",\"reporting\":\"yes\",\"alerts\":\"yes\"}', 'Only for developers');"
+export PGPASSWORD='versa123'&&psql niahdb versa -c "INSERT INTO subscription_db(id, subscription_name, scans, users, modules, description) values('2', 'NiahEnterprise', '0', '0', '{\"open source security\":\"yes\",\"container security\":\"yes\",\"license compliance\":\"yes\",\"reporting\":\"yes\",\"alerts\":\"yes\"}', 'Only for Enterprise');"
+export PGPASSWORD='versa123'&&psql niahdb versa -c "INSERT INTO subscription_db(id, subscription_name, scans, users, modules, description) values('3', 'NiahFlexi', '0', '0', '{\"open source security\":\"yes\",\"container security\":\"yes\",\"license compliance\":\"yes\",\"reporting\":\"yes\",\"alerts\":\"yes\"}', 'Custom Users');"
+export PGPASSWORD='versa123'&&psql niahdb versa -c "INSERT INTO subscription_db(id, subscription_name, scans, users, modules, description) values('4', 'Free', '100', '1', '{\"open source security\":\"yes\",\"container security\":\"yes\",\"license compliance\":\"yes\",\"reporting\":\"yes\",\"alerts\":\"yes\"}', 'Free User');"
+
+# Discount Table
+export PGPASSWORD='versa123'&&psql niahdb versa -c "INSERT INTO discount_tab(id, type, numbers, discount, description) values('1', 'users', '100', '10', 'New User disclount');"
+export PGPASSWORD='versa123'&&psql niahdb versa -c "INSERT INTO discount_tab(id, type, numbers, discount, description) values('2', 'scans', '100', '10', 'New scans disclount');"
+
+
+#add Virtual host and add user inside it
+sudo rabbitmqctl add_vhost niahscan
+sudo rabbitmqctl add_user niah scaguru
+
+#set permissions for user and run celery worker
+sudo rabbitmqctl set_permissions -p "niahscan" "niah" ".*" ".*" ".*"
+
+
+# set services
+cp -r /usr/share/niah-license/src/* /home/niah/niah-license/
+cp /usr/share/niah-license/niah-license.service /etc/systemd/system/niah-license.service
+
+# set services
+sudo cp /usr/share/niah-license/celeryd.service /etc/systemd/system/celeryd.service
+sudo cp /usr/share/niah-license/celeryd /etc/default/celeryd
+sudo mkdir /var/log/celery /var/run/celery
+sudo chown niah:niah /var/log/celery /var/run/celery
+sudo systemctl daemon-reload
+sudo systemctl enable celeryd
+
+sudo chown niah:niah /home/niah -R
+
+sudo systemctl daemon-reload
+
+sudo chown niah:niah /home/niah -R
+
+mkdir /tmp/users
+sudo chown niah:niah /var/run/ -R
+
+# install syft SBOM generator
+curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin
+
+# install Distro2SBOM
+
+git clone https://github.com/anthonyharrison/distro2SBOM.git
+cd distro2SBOM
+python3 setup.py install
+cd ..
+
+
+# add docker to the group
+sudo groupadd docker
+sudo usermod -aG docker niah
+sudo setfacl --modify user:niah:rw /var/run/docker.sock
+
+sudo cp /usr/share/niah-license/rc.local /etc/rc.local
+
+sudo mkdir /var/run/celery
+sudo chmod 777 /var/run/celery/ -R

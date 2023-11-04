@@ -1,0 +1,20 @@
+#!/bin/bash
+# file name preinst
+# Pre-install script for tera. This removes old versions o tera.
+
+echo "uninstalled niah ..."
+
+sudo rm -rf /home/niah/niah-license
+sudo -u postgres psql -c "DROP DATABASE niahdb;"
+
+sudo cp /etc/nginx/nginx.conf.org /etc/nginx/nginx.conf
+sudo service nginx restart
+sudo cp /etc/postgresql/10/main/pg_hba.conf.org /etc/postgresql/10/main/pg_hba.conf
+sudo service postgresql restart
+
+# unset services
+sudo rm -rf /etc/systemd/system/niah-license.service
+sudo systemctl daemon-reload
+
+sudo rm -rf /usr/share/niah-license
+

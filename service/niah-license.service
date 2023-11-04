@@ -1,0 +1,13 @@
+[Unit]
+Description=uWSGI instance to serve myproject
+After=network.target
+
+[Service]
+User=niah
+Group=niah
+WorkingDirectory=/home/niah/niah-license
+Environment="PATH=/home/niah/niah-license/bin"
+ExecStart=/home/niah/niah-license/bin/gunicorn --workers 5 --bind unix:niah-license.sock --timeout 2000 -m 007 wsgi:app
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,10 @@
+#!/bin/bash
+# file name preinst
+# Pre-install script for tera. This removes old versions o tera.
+
+echo "Looking for old versions of Niah ..."
+
+if [ -d "/usr/share/niah-license" ];then
+    sudo rm -rf /usr/share/niah-license
+    echo "Removed old niah from /usr/share ..."
+fi

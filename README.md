@@ -1,2 +1,1 @@
-# niah-license
-testing
+# niah_license_db

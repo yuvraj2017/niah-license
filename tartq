@@ -1,0 +1,14 @@
+● niah-license.service - uWSGI instance to serve myproject
+   Loaded: loaded (/etc/systemd/system/niah-license.service; disabled; vendor preset: enabled)
+   Active: inactive (dead)
+
+Jun 16 10:59:32 niah-license gunicorn[4882]: {'package': 'curl', 'osname': 'bullseye', 'purl': '', 'versions': ['[0:7.74.0-1.3+deb11u7]'], 'score': '0', 'severity': 'MEDIUM', 'modified': '2023-02-28T12:41:54Z', 'published': '2023-02-27T00:00:00Z', 'cves': ['CVE-2023-23916'], 'id': 'DSA-5365-1', 'niah_id': 'NIAH-DEBIAN-bullseye-curl-DSA-5365-1', 'references': ['https://www.debian.org/security/2023/dsa-5365'], 'summary': 'curl - security update', 'type': 'platform', 'type_name': 'debian'}
+Jun 16 10:59:32 niah-license gunicorn[4882]: 15
+Jun 16 10:59:32 niah-license gunicorn[4882]: [2023-06-16 10:59:32 +0000] [4882] [INFO] Handling signal: term
+Jun 16 10:59:32 niah-license gunicorn[4882]: [2023-06-16 10:59:32 +0000] [4882] [WARNING] Worker with pid 4902 was terminated due to signal 15
+Jun 16 10:59:32 niah-license gunicorn[4882]: [2023-06-16 10:59:32 +0000] [4882] [WARNING] Worker with pid 4908 was terminated due to signal 15
+Jun 16 10:59:32 niah-license gunicorn[4882]: [2023-06-16 10:59:32 +0000] [4882] [WARNING] Worker with pid 4910 was terminated due to signal 15
+Jun 16 10:59:32 niah-license gunicorn[4882]: [2023-06-16 10:59:32 +0000] [4882] [WARNING] Worker with pid 4906 was terminated due to signal 15
+Jun 16 10:59:32 niah-license gunicorn[4882]: [2023-06-16 10:59:32 +0000] [4882] [WARNING] Worker with pid 4912 was terminated due to signal 15
+Jun 16 10:59:32 niah-license gunicorn[4882]: [2023-06-16 10:59:32 +0000] [4882] [INFO] Shutting down: Master
+Jun 16 10:59:32 niah-license systemd[1]: Stopped uWSGI instance to serve myproject.

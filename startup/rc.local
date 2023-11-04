@@ -1,0 +1,7 @@
+#!/bin/bash
+
+mkdir /var/run/celery
+chmod 777 /var/run/celery/ -R
+
+mkdir /tmp/users
+chmod 777 /tmp/users/ -R

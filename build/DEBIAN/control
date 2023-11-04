@@ -1,0 +1,7 @@
+Package: niah-license
+Version: 0.0.1
+Architecture: all
+Maintainer: Jayesh Patel<jayesh@niahsecurity.io>
+Depends: python3-pip, python3-venv, nginx, postgresql, postgresql-contrib, python3-psycopg2, libpq-dev, net-tools, rabbitmq-server, ssh, unzip, docker.io, curl
+Homepage: https://niahsecurity.io
+Description: Niah License Server.

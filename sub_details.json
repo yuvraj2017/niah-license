@@ -1,0 +1,45 @@
+{
+	"free":
+		{
+			"price": {
+				"month": 0,
+				"year": 0
+			},
+			"details": 
+			[
+				"10K Credit/Month",
+				"Active API Support",
+				"50 Product Subscription",
+				"100 Vulnerability Subscription"
+			]
+		},
+	"Niah Flex":
+		{
+			"price": {
+				"month": 50,
+				"year": 600
+			},
+			"details":
+			[
+				"10K Credits/Month",
+				"Active API Support",
+				"Passive API Support",
+				"500 Free Product Subscription",
+				"500 Free Vulnerability Subscription"
+			]
+		},
+	"Niah Enterprise":
+		{
+			"price": {
+				"month": 100,
+				"year": 1000
+			},
+			"details":
+			[
+				"Unlimited Credits",
+				"Unlimited Product Subscription",
+				"Unlimited Vulnerability Subscription",
+				"Multiuser Support"
+			]
+		}
+}
